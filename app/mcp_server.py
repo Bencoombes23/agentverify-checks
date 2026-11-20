@@ -31,7 +31,7 @@ def calculate(request: dict[str, Any]) -> dict[str, Any]:
         parsed = VerificationRequest.model_validate(request)
         result = verify(parsed)
         record("mcp", "verify", int(result.status == "passed"), int(result.status == "failed"))
-        return result.model_dump(mode="json")
+        return result.model_dump(mode="json", exclude_none=True)
     except (ValidationError, Exception) as exc:
         return _error(exc)
 
@@ -44,7 +44,7 @@ def calculate_batch(requests: list[dict[str, Any]]) -> dict[str, Any]:
         record("mcp", "batch", passed, len(results) - passed)
         return {
             "total": len(results), "passed": passed, "failed": len(results) - passed,
-            "results": [item.model_dump(mode="json") for item in results],
+            "results": [item.model_dump(mode="json", exclude_none=True) for item in results],
         }
     except (ValidationError, Exception) as exc:
         return _error(exc)
@@ -63,7 +63,7 @@ def calculate_signed(request: dict[str, Any]) -> dict[str, Any]:
 
 @mcp.tool()
 def verify_calculation(request: dict[str, Any]) -> dict[str, Any]:
-    """Check a claimed numerical result. Request fields: calculation_type, claimed_result, inputs, optional tolerance. Returns passed/failed and independently calculated result."""
+    """Check a claimed numerical result. Request fields: calculation_type, claimed_result, inputs, optional tolerance. Returns passed/failed and independently calculated result. Claim-vs-source categories (quote_in_text, number_in_text, date_in_text) take source_text you supply plus claim_text (or claimed_result for numbers); they prove only that the supplied text contains the claim, not that it is true."""
     return calculate(request)
 
 

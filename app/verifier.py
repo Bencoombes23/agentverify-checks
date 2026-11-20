@@ -1,6 +1,7 @@
 ﻿from decimal import Decimal, InvalidOperation, localcontext
 from fastapi import HTTPException
-from app.models import VerificationRequest, VerificationResponse
+from app import textcheck
+from app.models import TEXT_KINDS, VerificationRequest, VerificationResponse
 
 REQUIRED = {
     "arithmetic": {"a", "b"},
@@ -15,8 +16,46 @@ REQUIRED = {
     "loan_payment": {"principal", "annual_rate", "years"},
 }
 
+def verify_text(request: VerificationRequest) -> VerificationResponse:
+    """AV-018: claim-vs-source checks on caller-supplied text. Pure; no I/O."""
+    kind = request.calculation_type
+    try:
+        if kind == "quote_in_text":
+            fold = bool(request.case_insensitive)
+            passed, evidence = textcheck.check_quote(request.claim_text, request.source_text, fold)
+            return VerificationResponse(
+                status="passed" if passed else "failed", calculation_type=kind,
+                explanation="Deterministic verification: quote " + ("found" if passed else "not found")
+                            + " in supplied text (substring evidence, not truth)",
+                evidence=evidence)
+        if kind == "date_in_text":
+            passed, evidence = textcheck.check_date(request.claim_text, request.source_text, request.date_format)
+            return VerificationResponse(
+                status="passed" if passed else "failed", calculation_type=kind,
+                explanation="Deterministic verification: date " + ("found" if passed else "not found")
+                            + " in supplied text (substring evidence, not truth)",
+                evidence=evidence)
+        tolerance = request.tolerance if "tolerance" in request.model_fields_set else Decimal(0)
+        passed, nearest, difference, evidence = textcheck.check_number(
+            request.claimed_result, tolerance, request.source_text,
+            bool(request.allow_scaling), request.unit)
+        return VerificationResponse(
+            status="passed" if passed else "failed", calculation_type=kind,
+            claimed_result=request.claimed_result, calculated_result=nearest, difference=difference,
+            tolerance=tolerance,
+            explanation="Deterministic verification: number " + ("found" if passed else "not found")
+                        + " in supplied text (nearest standalone number reported; substring evidence, not truth)",
+            evidence=evidence)
+    except textcheck.TextCheckError as exc:
+        raise HTTPException(422, detail=str(exc))
+    except (InvalidOperation, OverflowError):
+        raise HTTPException(422, detail="Text check could not be evaluated")
+
+
 def verify(request: VerificationRequest) -> VerificationResponse:
     kind = request.calculation_type
+    if kind in TEXT_KINDS:
+        return verify_text(request)
     x = request.inputs
     if set(x) != REQUIRED[kind]:
         raise HTTPException(422, detail={

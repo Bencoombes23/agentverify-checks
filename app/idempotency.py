@@ -43,7 +43,7 @@ def fingerprint(request) -> str:
     canonical = json.dumps({
         "contract": CONTRACT,
         "route": ROUTE,
-        "request": _canonical_value(request.model_dump(mode="python")),
+        "request": _canonical_value(request.model_dump(mode="python", exclude_none=True)),
     }, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("ascii")
     return hashlib.sha256(canonical).hexdigest()
 

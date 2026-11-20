@@ -106,8 +106,10 @@ def issue_receipt(request, result) -> dict:
         "receipt_id": str(uuid4()),
         "issued_at": datetime.now(timezone.utc).isoformat(),
         "rule_version": "agentverify-" + __version__,
-        "request": request.model_dump(mode="json"),
-        "result": result.model_dump(mode="json"),
+        # exclude_none keeps arithmetic receipts byte-identical to pre-AV-018. The full source
+        # text is never stored: result.evidence carries its SHA-256 and the normalisation flags.
+        "request": request.model_dump(mode="json", exclude_none=True, exclude={"source_text"}),
+        "result": result.model_dump(mode="json", exclude_none=True),
     }
     return {
         "payload": payload,

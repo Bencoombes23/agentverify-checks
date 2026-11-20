@@ -51,13 +51,13 @@ def readiness(request: Request):
         raise HTTPException(status_code=503, detail="Service not ready")
     return {"status": "ready"}
 
-@app.post("/verify", response_model=VerificationResponse)
+@app.post("/verify", response_model=VerificationResponse, response_model_exclude_none=True)
 def verify_calculation(request: VerificationRequest):
     result = verify(request)
     record("http", "verify", int(result.status == "passed"), int(result.status == "failed"))
     return result
 
-@app.post("/verify/batch", response_model=BatchResponse)
+@app.post("/verify/batch", response_model=BatchResponse, response_model_exclude_none=True)
 def verify_batch(request: BatchRequest):
     results = [verify(item) for item in request.requests]
     passed = sum(item.status == "passed" for item in results)
