@@ -52,4 +52,7 @@ def deployment_errors(env=None, *, include_startup=True):
             errors.append("Managed PostgreSQL schema required")
     if e.get("AGENTVERIFY_POSTGRES_SCHEMA", "public") != "public":
         errors.append("Unsupported PostgreSQL schema")
+    # AV-017: optional x402 (off by default; value-free messages, refuses unsafe config).
+    from app.x402_gate import config_errors as x402_config_errors
+    errors.extend(x402_config_errors(e))
     return errors

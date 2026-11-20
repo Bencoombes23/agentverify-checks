@@ -73,6 +73,14 @@ class APIProtectionMiddleware(BaseHTTPMiddleware):
             if idempotency_values:
                 return JSONResponse(status_code=400, content={"detail": "Idempotency is unavailable for this request"})
             return await call_next(request)
+        # AV-017: the x402 gate verified a payment for this request. The flag lives in the ASGI
+        # scope, which only server-side code can set (clients cannot inject scope keys).
+        if request.scope.get("agentverify.x402_paid") is True:
+            if idempotency_values:
+                return JSONResponse(status_code=400, content={"detail": "Idempotency is unavailable for this request"})
+            if request.url.path == "/verify/signed" and not os.getenv("AGENTVERIFY_SIGNING_KEY_B64"):
+                return JSONResponse(status_code=503, content={"detail": "Signing key is not configured"})
+            return await call_next(request)
         # Missing credentials/configuration returns 503 below; never bypass.
         if request.url.path in ("/health", "/pricing") and request.method == "GET":
             return await call_next(request)

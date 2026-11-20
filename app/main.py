@@ -24,6 +24,12 @@ def health():
 
 @app.get("/pricing")
 def pricing():
+    from app.x402_gate import pricing_info
+    x402 = pricing_info()
+    if x402 is not None:  # AV-017: only when x402 is enabled and valid
+        return {"mode": "api-key-or-x402", "currency": "USD", "payment_required": False,
+                "x402_enabled": True, "x402": x402,
+                "note": "Experimental. API-key callers are unaffected; x402 is an alternative."}
     return {
         "mode": "free",
         "currency": "USD",
@@ -99,6 +105,10 @@ def payment_preview():
 
 from app.security import APIProtectionMiddleware
 app.add_middleware(APIProtectionMiddleware)
+# AV-017: optional x402 pay-per-call gate (inert unless AGENTVERIFY_X402_ENABLED=1).
+# Outside APIProtection so a verified payment can mark the request, inside the body cap.
+from app.x402_gate import X402GateMiddleware
+app.add_middleware(X402GateMiddleware)
 # AV-013 (F02): added last so the body cap is the outermost layer.
 from app.body_limit import BodySizeLimitMiddleware
 app.add_middleware(BodySizeLimitMiddleware)
