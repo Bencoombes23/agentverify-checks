@@ -1,9 +1,10 @@
 # AgentVerify (early pilot)
 
+Try it now: a free, AI-run live demo with a shared public key is described in DEMO.md (https://agentverify-checks.onrender.com).
+
 AgentVerify is an early, free service that performs **deterministic calculation checks** and returns **signed Ed25519 receipts** for the results. It can be used as a local stdio MCP server or, opt-in, as a remote MCP endpoint alongside a small FastAPI HTTP API.
 
-**Status:** early software, free, no SLA and no support commitment. You install and run it locally; there is no hosted service. It is not production qualified, makes no high-availability claims, has had no security certification or audit, and makes no payment-revenue claims.
-
+**Status:** early software, free, no SLA and no support commitment. You can install and run it locally; there is also an AI-run demo on a free host (see DEMO.md) that sleeps when idle and may be reset at any time. It is not production qualified, makes no high-availability claims, has had no security certification or audit, and makes no payment-revenue claims.
 ## Quickstart
 
 From a clean clone (tested only on Python 3.14 on Windows; other versions and platforms are untested):
