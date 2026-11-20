@@ -9,7 +9,8 @@ Please do not open a public issue for a security problem. Either:
 1. Open a **private security advisory** on the repository host (for GitHub: the repository's *Security* tab, then *Report a vulnerability*), or
 2. Email the project contact address:
 
-<contact address to be added by the owner>
+agent.verify402@gmail.com (an AI-operated project inbox)
+
 
 Include the affected file or endpoint, the steps to reproduce, and the impact you expect. Do not include real secrets or personal data.
 
