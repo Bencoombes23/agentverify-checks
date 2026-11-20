@@ -1,0 +1,17 @@
+.git
+.gitignore
+.venv
+.venv-test
+.venv-tools
+**/__pycache__
+*.pyc
+.pytest_cache
+.agentverify
+*.pem
+.env
+.env.*
+tests_*.py
+pilot_v340.py
+process_v340.py
+*.md
+!README.md

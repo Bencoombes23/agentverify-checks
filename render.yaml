@@ -1,0 +1,29 @@
+# Render Blueprint for the AgentVerify pilot (free web service, Docker runtime).
+# No secret values live in this file: variables marked sync: false are entered
+# by the owner in the Render dashboard. See DEPLOY.md.
+services:
+  - type: web
+    name: agentverify
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      # --- non-secret configuration ---
+      - key: AGENTVERIFY_PUBLIC_MODE
+        value: "1"
+      - key: AGENTVERIFY_CLOUD_MODE
+        value: "1"
+      - key: AGENTVERIFY_USAGE_DB
+        value: /tmp/agentverify-usage.sqlite3
+      - key: AGENTVERIFY_RATE_LIMIT_PER_MINUTE
+        value: "60"
+      # --- secrets and owner-specific values: names only, set in the dashboard ---
+      - key: AGENTVERIFY_SIGNING_KEY_B64
+        sync: false
+      - key: AGENTVERIFY_API_KEYS
+        sync: false
+      # Only needed if remote MCP is switched on (AGENTVERIFY_REMOTE_MCP=1):
+      # set to the service host name, e.g. your-service.onrender.com
+      - key: AGENTVERIFY_MCP_ALLOWED_HOSTS
+        sync: false
