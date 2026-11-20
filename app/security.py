@@ -63,23 +63,12 @@ class APIProtectionMiddleware(BaseHTTPMiddleware):
                 os.getenv("AGENTVERIFY_REQUIRE_GUARDED_LOCAL_LAUNCH") == "1" and
                 not guarded_local_process()):
             return JSONResponse(status_code=503, content={"detail": "Guarded local launch required"})
-        # V1.72: unset configuration is never an unauthenticated mode.
-        # Development bypass requires explicit opt-in and loopback transport.
-        dev = os.getenv("AGENTVERIFY_LOCAL_DEV_MODE") == "1"
-        # V1.76: require an explicit loopback-only listener declaration.
-        # An HTTP request's Host/client address is not proof of server binding.
-        bind = os.getenv("AGENTVERIFY_LOCAL_BIND_HOST", "")
-        local_listener = bind in ("127.0.0.1", "::1")
-        cloud_environment = any(os.getenv(k) for k in (
-            "RENDER", "RENDER_SERVICE_ID", "DYNO", "K_SERVICE",
-            "WEBSITE_INSTANCE_ID", "AWS_LAMBDA_FUNCTION_NAME"
-        ))
-        if dev and local_listener and not cloud_environment and os.getenv("AGENTVERIFY_PUBLIC_MODE") != "1" and os.getenv("AGENTVERIFY_CLOUD_MODE") != "1":
-            peer = request.client.host if request.client else ""
-            host = request.url.hostname or ""
-            if (peer not in ("127.0.0.1", "::1", "testclient")
-                    or host not in ("127.0.0.1", "localhost", "::1", "testserver")
-                    or any(h in request.headers for h in ("forwarded", "x-forwarded-for", "x-forwarded-host"))):
+        # AV-013 (F01): the unauthenticated local-dev bypass is fail closed. It needs
+        # dev mode AND an explicit acknowledgement flag AND a loopback bind AND the
+        # guarded launcher (see app.local_dev_bypass). Otherwise normal auth applies.
+        from app.local_dev_bypass import bypass_enabled, loopback_request, proxy_header_present
+        if bypass_enabled():
+            if not loopback_request(request.scope) or proxy_header_present(request.scope["headers"]):
                 return JSONResponse(status_code=403, content={"detail": "Local development mode requires loopback access"})
             if idempotency_values:
                 return JSONResponse(status_code=400, content={"detail": "Idempotency is unavailable for this request"})

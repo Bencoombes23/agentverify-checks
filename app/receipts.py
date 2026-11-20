@@ -10,6 +10,8 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 from cryptography.exceptions import InvalidSignature
 
+from app import __version__
+
 KEY_DIR = Path(__file__).resolve().parent.parent / ".agentverify"
 KEY_FILE = KEY_DIR / "signing_key.pem"
 
@@ -103,7 +105,7 @@ def issue_receipt(request, result) -> dict:
         "receipt_version": "1",
         "receipt_id": str(uuid4()),
         "issued_at": datetime.now(timezone.utc).isoformat(),
-        "rule_version": "agentverify-0.3.0",
+        "rule_version": "agentverify-" + __version__,
         "request": request.model_dump(mode="json"),
         "result": result.model_dump(mode="json"),
     }

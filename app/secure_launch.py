@@ -44,7 +44,8 @@ def launch_errors(host: str, env: Mapping[str, str], *, reload: bool = False, wo
     elif declared and env.get("AGENTVERIFY_LOCAL_DEV_MODE") != "1":
         # A stale declaration is not permission to enable a bypass.
         pass
-    if local and env.get("AGENTVERIFY_REQUIRE_GUARDED_LOCAL_LAUNCH") == "1":
+    from app.local_dev_bypass import BYPASS_ACK_ENV
+    if local and (env.get("AGENTVERIFY_REQUIRE_GUARDED_LOCAL_LAUNCH") == "1" or env.get(BYPASS_ACK_ENV) == "1"):
         if reload:
             errors.append("guarded_local_reload_forbidden")
         if workers != 1:
@@ -81,9 +82,15 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     # The process-local guard is activated only after validating launch options.
     # Reload and multiple workers are prohibited when guard enforcement is on.
-    if os.environ.get("AGENTVERIFY_LOCAL_DEV_MODE") == "1" and os.environ.get("AGENTVERIFY_REQUIRE_GUARDED_LOCAL_LAUNCH") == "1":
+    from app.local_dev_bypass import BYPASS_ACK_ENV
+    if os.environ.get("AGENTVERIFY_LOCAL_DEV_MODE") == "1" and (
+            os.environ.get("AGENTVERIFY_REQUIRE_GUARDED_LOCAL_LAUNCH") == "1"
+            or os.environ.get(BYPASS_ACK_ENV) == "1"):
         from app.local_launch_guard import activate
         activate(normalized_host(args.host))
+        if os.environ.get(BYPASS_ACK_ENV) == "1":
+            print("WARNING: UNAUTHENTICATED LOCAL DEV BYPASS IS ACTIVE (loopback only). "
+                  "Never run this behind a proxy or on a shared host.", file=sys.stderr)
     # Import uvicorn only after all checks; no network bind occurs on rejection.
     import uvicorn
     uvicorn.run("app.main:app", host=normalized_host(args.host), port=args.port,

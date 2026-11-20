@@ -4,6 +4,7 @@ from typing import Any
 
 from fastapi import Body, FastAPI, HTTPException, Request, Response
 
+from app import __version__
 from app.models import BatchRequest, BatchResponse, VerificationRequest, VerificationResponse
 from app.receipts import check_receipt, issue_receipt, public_key_info
 from app.usage import record
@@ -13,13 +14,13 @@ from app.startup import application_lifespan
 app = FastAPI(
     title="AgentVerify",
     description="Deterministic verification for AI agents. Free during development.",
-    version="0.8.0",
+    version=__version__,
     lifespan=application_lifespan,
 )
 
 @app.get("/health")
 def health():
-    return {"status": "healthy", "service": "AgentVerify", "version": "0.8.0"}
+    return {"status": "healthy", "service": "AgentVerify", "version": __version__}
 
 @app.get("/pricing")
 def pricing():
@@ -98,6 +99,9 @@ def payment_preview():
 
 from app.security import APIProtectionMiddleware
 app.add_middleware(APIProtectionMiddleware)
+# AV-013 (F02): added last so the body cap is the outermost layer.
+from app.body_limit import BodySizeLimitMiddleware
+app.add_middleware(BodySizeLimitMiddleware)
 
 # AgentVerify V0.8 remote MCP (opt-in). Local stdio MCP remains unchanged.
 # Mounting at / means the SDK's default /mcp route is reachable at /mcp.
@@ -114,20 +118,12 @@ if os.getenv("AGENTVERIFY_REMOTE_MCP", "0") == "1":
     from mcp.server.transport_security import TransportSecuritySettings
 
     mcp.settings.stateless_http = True
+    from app.mcp_hosts import allowed_hosts_and_origins
+    _mcp_hosts, _mcp_origins = allowed_hosts_and_origins()
     mcp.settings.transport_security = TransportSecuritySettings(
         enable_dns_rebinding_protection=True,
-        allowed_hosts=[
-            "127.0.0.1:*",
-            "localhost:*",
-            "[::1]:*",
-            "agentverify.onrender.com",
-        ],
-        allowed_origins=[
-            "http://127.0.0.1:*",
-            "http://localhost:*",
-            "http://[::1]:*",
-            "https://agentverify.onrender.com",
-        ],
+        allowed_hosts=_mcp_hosts,
+        allowed_origins=_mcp_origins,
     )
 
     remote_mcp_app = mcp.streamable_http_app()
