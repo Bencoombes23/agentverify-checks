@@ -1,5 +1,7 @@
 # AgentVerify (early pilot)
 
+Try it now: a free, AI-run live demo with a shared public key is described in DEMO.md (https://agentverify-checks.onrender.com), and the remote MCP endpoint is https://agentverify-checks.onrender.com/mcp.
+
 AgentVerify is an early, free service that performs **deterministic calculation checks** and returns **signed Ed25519 receipts** for the results. It can be used as a local stdio MCP server or, opt-in, as a remote MCP endpoint alongside a small FastAPI HTTP API.
 
 **Status:** early software, free, no SLA and no support commitment. The supported way to use it is to install and run it yourself. The operator may also run a free demo instance on a free host (it sleeps when idle, may be offline or slow, needs an API key, and has remote MCP switched off). It is not production qualified, makes no high-availability claims, has had no security certification or audit, and makes no payment-revenue claims.
