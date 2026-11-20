@@ -1,0 +1,12 @@
+﻿.venv/
+.venv-test/
+.venv-tools/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pem
+.env
+.env.*
+!.env.example
+.agentverify/
+EXPORT_REPORT.md
