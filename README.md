@@ -4,8 +4,7 @@ Try it now: a free, AI-run live demo with a shared public key is described in DE
 
 AgentVerify is an early, free service that performs **deterministic calculation checks** and returns **signed Ed25519 receipts** for the results. It can be used as a local stdio MCP server or, opt-in, as a remote MCP endpoint alongside a small FastAPI HTTP API.
 
-**Status:** early software, free, no SLA and no support commitment. The supported way to use it is to install and run it yourself. The operator may also run a free demo instance on a free host (it sleeps when idle, may be offline or slow, needs an API key, and has remote MCP switched off). It is not production qualified, makes no high-availability claims, has had no security certification or audit, and makes no payment-revenue claims.
-
+**Status:** early software, free, no SLA and no support commitment. The supported way to use it is to install and run it yourself. The operator also runs a free AI-run demo instance (see DEMO.md) that sleeps when idle, may be offline or slow, and needs an API key; its remote MCP endpoint is switched on and has been tested on loopback and with an outside connection, not under load. It is not production qualified, makes no high-availability claims, has had no security certification or audit, and makes no payment-revenue claims.
 ## Quickstart
 
 From a clean clone (tested only on Python 3.14 on Windows; other versions and platforms are untested):
