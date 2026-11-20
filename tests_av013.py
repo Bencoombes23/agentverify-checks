@@ -258,6 +258,16 @@ class F06Receipts(unittest.TestCase):
         self.assertFalse(verify_receipt(receipt, trusted))
         self.assertEqual(json.loads(call("POST", "/receipts/check", receipt, key=KEY)[1]), {"valid": False})
 
+    def test_sample_receipt_is_current_and_verifies(self):
+        # AV-027: examples/sample_receipt.json was produced by the 0.8.0 code with a
+        # throw-away key (its embedded public key) and must keep verifying against it.
+        from agentverify_client.receipts import verify_receipt
+        sample = json.loads((ROOT / "examples" / "sample_receipt.json").read_text(encoding="utf-8"))
+        self.assertEqual(sample["payload"]["rule_version"], "agentverify-" + app.version)
+        self.assertTrue(verify_receipt(sample, sample["public_key"]))
+        sample["payload"]["result"]["status"] = "failed"
+        self.assertFalse(verify_receipt(sample, sample["public_key"]))
+
     def test_public_key_endpoint_still_requires_auth(self):
         self.assertEqual(call("GET", "/receipts/public-key")[0], 401)
 

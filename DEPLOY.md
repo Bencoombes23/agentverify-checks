@@ -1,6 +1,6 @@
 # Deploying the AgentVerify pilot (Render free tier)
 
-Early pilot software. No SLA, no support commitment, not production qualified. Nothing here has been run on Render yet; the local proof (below) used the same start command and environment variable names without Docker.
+Early pilot software. No SLA, no support commitment, not production qualified. A free demo has since been deployed from this repository with remote MCP off; the local proof (below) used the same start command and environment variable names without Docker.
 
 ## What the app needs
 
@@ -20,7 +20,7 @@ Early pilot software. No SLA, no support commitment, not production qualified. N
 | `AGENTVERIFY_USAGE_DB` | SQLite usage file path | recommended | `/tmp/agentverify-usage.sqlite3` (the default path is inside the app directory, which is read-only in the image) |
 | `AGENTVERIFY_RATE_LIMIT_PER_MINUTE` | Per-key, in-process rate limit (1-100000) | optional | `60` |
 | `AGENTVERIFY_MAX_BODY_BYTES` | Request body cap (1024 to 8 MiB) | optional | 64 KiB |
-| `AGENTVERIFY_REMOTE_MCP` | `1` mounts remote MCP at `/mcp` (needs public mode) | optional | off. Remote MCP was **not** verified |
+| `AGENTVERIFY_REMOTE_MCP` | `1` mounts remote MCP at `/mcp` (needs public mode) | optional | off. Remote MCP was verified locally on loopback only (AV-027), not on Render |
 | `AGENTVERIFY_MCP_ALLOWED_HOSTS` | Comma-separated public host names allowed for MCP (F06), e.g. `your-service.onrender.com`; no wildcards | only with remote MCP | localhost only |
 | `AGENTVERIFY_READINESS_ENABLED` / `AGENTVERIFY_READINESS_KEY` | Optional operator `/ready` (key at least 32 chars, secret) | optional | off |
 | `PORT` | Port to bind (host `0.0.0.0`) | set by Render | 10000 in the image |

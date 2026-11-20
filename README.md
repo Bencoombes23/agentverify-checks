@@ -1,10 +1,9 @@
 # AgentVerify (early pilot)
 
-Try it now: a free, AI-run live demo with a shared public key is described in DEMO.md (https://agentverify-checks.onrender.com).
-
 AgentVerify is an early, free service that performs **deterministic calculation checks** and returns **signed Ed25519 receipts** for the results. It can be used as a local stdio MCP server or, opt-in, as a remote MCP endpoint alongside a small FastAPI HTTP API.
 
-**Status:** early software, free, no SLA and no support commitment. You can install and run it locally; there is also an AI-run demo on a free host (see DEMO.md) that sleeps when idle and may be reset at any time. It is not production qualified, makes no high-availability claims, has had no security certification or audit, and makes no payment-revenue claims.
+**Status:** early software, free, no SLA and no support commitment. The supported way to use it is to install and run it yourself. The operator may also run a free demo instance on a free host (it sleeps when idle, may be offline or slow, needs an API key, and has remote MCP switched off). It is not production qualified, makes no high-availability claims, has had no security certification or audit, and makes no payment-revenue claims.
+
 ## Quickstart
 
 From a clean clone (tested only on Python 3.14 on Windows; other versions and platforms are untested):
@@ -28,6 +27,13 @@ ok = verify_receipt(receipt, trusted_public_key)   # True only if signed by that
 ```
 
 `IssuerTrustStore` in the same package lets you pin several issuer keys and mark them active, retired or revoked. A valid signature proves integrity and issuer identity only, not that a claim is true.
+
+A sample receipt is in [`examples/sample_receipt.json`](examples/sample_receipt.json): `rule_version` `agentverify-0.8.0`, produced by the current code through the remote MCP tool `verify_and_sign` on 2026-11-20 with a **throw-away signing key** (discarded; the embedded public key belongs to no real issuer). It only shows the format; `tests_av013.py` checks that it still verifies against its own embedded key, which proves nothing about any real issuer.
+
+## MCP
+
+- **Local stdio (the default):** `python -m app.mcp_server`. Tools: `verify_calculation`, `verify_batch`, `verify_and_sign`, `check_signed_receipt`, `get_public_key`.
+- **Remote (opt-in, off by default):** set `AGENTVERIFY_REMOTE_MCP=1` together with `AGENTVERIFY_PUBLIC_MODE=1`; the endpoint is `/mcp` (Streamable HTTP, stateless) and needs the same `X-API-Key` header as the HTTP API. Hosts other than loopback must be listed in `AGENTVERIFY_MCP_ALLOWED_HOSTS` (exact host names, no wildcards); other `Host` and `Origin` values are rejected. It was verified locally on loopback only (AV-027): tool listing, a signed arithmetic check and a signed claim-vs-source check over the MCP client library, receipts verified with `agentverify_client`, and a wrong `Host`, a bad `Origin` and a missing or wrong key were all rejected. It has not been tested on a public host, and the free demo does not enable it.
 
 ## Claim-vs-source checks (AV-018)
 
@@ -65,7 +71,7 @@ Besides arithmetic, three deterministic categories check whether **text you supp
 - **F03, magnitude rule (Medium):** inputs and claims must have a magnitude between roughly 1E-18 and 1E+18 (at most 30 digits). Some correct but very large or very small results (e.g. 1E+17 x 1E+17) are rejected with HTTP 422. These are false rejections, not wrong answers. Not changed.
 - **F04, idempotency key can stay stuck (Medium, suspected):** read from the code, not executed (needs PostgreSQL). After a quota or transient failure an `Idempotency-Key` may stay blocked until retention ends; use a new key.
 - **F05, durable credentials are Windows-only (Medium):** the durable credential store (and therefore idempotency) works only on Windows and fails closed elsewhere. The default static-key mode is unaffected.
-- Single worker only; the rate limit and the replay store are in-process. PostgreSQL paths, remote MCP and cloud recovery were not verified. Tested on one Windows machine only.
+- Single worker only; the rate limit and the replay store are in-process. PostgreSQL paths and cloud recovery were not verified; remote MCP was verified on loopback only (see MCP above). Tested on one Windows machine only.
 - Never run a reverse proxy in front of the local-dev bypass, and never enable that bypass on a shared host.
 
 ## x402 (experimental, testnet-only)

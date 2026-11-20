@@ -1,0 +1,29 @@
+{
+  "payload": {
+    "receipt_version": "1",
+    "receipt_id": "5af9183b-c3ad-4534-9821-17ccc7e109bc",
+    "issued_at": "2026-11-20T23:04:52.055633+00:00",
+    "rule_version": "agentverify-0.8.0",
+    "request": {
+      "calculation_type": "multiply",
+      "claimed_result": "42",
+      "inputs": {
+        "a": "6",
+        "b": "7"
+      },
+      "tolerance": "0.01"
+    },
+    "result": {
+      "status": "passed",
+      "calculation_type": "multiply",
+      "claimed_result": "42",
+      "calculated_result": "42",
+      "difference": "0",
+      "tolerance": "0.01",
+      "explanation": "Deterministic verification: multiply"
+    }
+  },
+  "algorithm": "Ed25519",
+  "public_key": "QdvdfIRFFNuTMujSPOu1aApUkPiXqPG4vlUJFtEOCys",
+  "signature": "eVL9H9be9k851P_NkDB_y6icuD3tPqHs6wIfjn4bZFTCuWjIZWHBs39gmH2dYX6ntYWJnlJxv1PwzYe9ttIlDg"
+}
