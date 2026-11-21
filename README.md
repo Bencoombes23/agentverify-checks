@@ -34,7 +34,7 @@ A sample receipt is in [`examples/sample_receipt.json`](examples/sample_receipt.
 ## MCP
 
 - **Local stdio (the default):** `python -m app.mcp_server`. Tools: `verify_calculation`, `verify_batch`, `verify_and_sign`, `check_signed_receipt`, `get_public_key`.
-- **Remote (opt-in, off by default):** set `AGENTVERIFY_REMOTE_MCP=1` together with `AGENTVERIFY_PUBLIC_MODE=1`; the endpoint is `/mcp` (Streamable HTTP, stateless) and needs the same `X-API-Key` header as the HTTP API. Hosts other than loopback must be listed in `AGENTVERIFY_MCP_ALLOWED_HOSTS` (exact host names, no wildcards); other `Host` and `Origin` values are rejected. It was verified locally on loopback only (AV-027): tool listing, a signed arithmetic check and a signed claim-vs-source check over the MCP client library, receipts verified with `agentverify_client`, and a wrong `Host`, a bad `Origin` and a missing or wrong key were all rejected. It has not been tested on a public host, and the free demo does not enable it.
+- **Remote (opt-in, off by default):** set `AGENTVERIFY_REMOTE_MCP=1` together with `AGENTVERIFY_PUBLIC_MODE=1`; the endpoint is `/mcp` (Streamable HTTP, stateless) and needs the same `X-API-Key` header as the HTTP API. Hosts other than loopback must be listed in `AGENTVERIFY_MCP_ALLOWED_HOSTS` (exact host names, no wildcards); other `Host` and `Origin` values are rejected. It was verified locally on loopback only (AV-027): tool listing, a signed arithmetic check and a signed claim-vs-source check over the MCP client library, receipts verified with `agentverify_client`, and a wrong `Host`, a bad `Origin` and a missing or wrong key were all rejected. The free demo has it switched on (host agentverify-checks.onrender.com); from outside, initialize and tools/list were checked with the demo key. It has not been tested under load.
 
 ## Claim-vs-source checks (AV-018)
 
@@ -88,3 +88,7 @@ Details, configuration and the owner checklist: [`X402.md`](X402.md). Tests: `py
 ## License
 
 MIT, see `LICENSE`.
+
+## Agent skill
+
+skill/SKILL.md is a ready-made agent skill that tells an AI agent when and how to call the demo (or a self-run copy) and how to describe what a receipt does and does not prove. Copy it into your agent's skills folder if you want to use it. It is a plain file in this repository, not a listing on any marketplace.
