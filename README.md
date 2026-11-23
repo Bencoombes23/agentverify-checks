@@ -1,5 +1,7 @@
 # AgentVerify (early pilot)
 
+[![Bencoombes23/agentverify-checks MCP server](https://glama.ai/mcp/servers/Bencoombes23/agentverify-checks/badges/score.svg)](https://glama.ai/mcp/servers/Bencoombes23/agentverify-checks)
+
 Try it now: a free, AI-run live demo with a shared public key is described in DEMO.md (https://agentverify-checks.onrender.com), and the remote MCP endpoint is https://agentverify-checks.onrender.com/mcp.
 
 AgentVerify is an early, free service that performs **deterministic calculation checks** and returns **signed Ed25519 receipts** for the results. It can be used as a local stdio MCP server or, opt-in, as a remote MCP endpoint alongside a small FastAPI HTTP API.
