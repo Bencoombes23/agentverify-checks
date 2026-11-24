@@ -1,0 +1,121 @@
+{
+    "actorSpecification": 1,
+    "fields": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "index": {
+                "type": "integer",
+                "description": "Position of the check in the input list, starting at 0.",
+                "nullable": true,
+                "example": 0
+            },
+            "status": {
+                "type": "string",
+                "description": "passed or failed for a real result; error when the request was malformed or rejected (not charged).",
+                "enum": ["passed", "failed", "error"],
+                "nullable": true,
+                "example": "passed"
+            },
+            "calculation_type": {
+                "type": "string",
+                "description": "The type of check that was run.",
+                "nullable": true,
+                "example": "percentage"
+            },
+            "claimed_result": {
+                "type": "string",
+                "description": "The number that was claimed, as an exact decimal string. Absent for quote and date checks.",
+                "nullable": true,
+                "example": "25"
+            },
+            "calculated_result": {
+                "type": "string",
+                "description": "The independently calculated number, or the nearest standalone number found in the text.",
+                "nullable": true,
+                "example": "25.00"
+            },
+            "difference": {
+                "type": "string",
+                "description": "Absolute difference between the claimed and calculated numbers.",
+                "nullable": true,
+                "example": "0.00"
+            },
+            "tolerance": {
+                "type": "string",
+                "description": "The tolerance that was applied.",
+                "nullable": true,
+                "example": "0.01"
+            },
+            "explanation": {
+                "type": "string",
+                "description": "Plain-language description of what was checked. A pass on a text check means the supplied text contains the claim, not that the claim is true.",
+                "nullable": true,
+                "example": "Deterministic verification: percentage"
+            },
+            "evidence": {
+                "type": "object",
+                "description": "Text checks only: SHA-256 of the normalised source text, whether it was found, match position and normalisation flags.",
+                "properties": {},
+                "required": [],
+                "additionalProperties": true,
+                "nullable": true,
+                "example": { "found": true, "match_offset": 18 }
+            },
+            "receipt": {
+                "type": "object",
+                "description": "Only when signed receipts are switched on: payload, algorithm, public_key and Ed25519 signature.",
+                "properties": {},
+                "required": [],
+                "additionalProperties": true,
+                "nullable": true,
+                "example": { "algorithm": "Ed25519" }
+            },
+            "error": {
+                "type": "string",
+                "description": "Error code for rows with status error: invalid_request or verification_error.",
+                "nullable": true,
+                "example": "invalid_request"
+            },
+            "details": {
+                "type": ["array", "object", "string"],
+                "description": "Reason for an error row. Not charged.",
+                "nullable": true,
+                "example": "Cannot divide by zero"
+            }
+        },
+        "required": [],
+        "additionalProperties": true
+    },
+    "views": {
+        "overview": {
+            "title": "Check results",
+            "description": "One row per check, in input order",
+            "transformation": {
+                "fields": [
+                    "index",
+                    "status",
+                    "calculation_type",
+                    "claimed_result",
+                    "calculated_result",
+                    "difference",
+                    "explanation",
+                    "error"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "index": { "label": "#", "format": "number" },
+                    "status": { "label": "Status", "format": "text" },
+                    "calculation_type": { "label": "Check type", "format": "text" },
+                    "claimed_result": { "label": "Claimed", "format": "text" },
+                    "calculated_result": { "label": "Calculated", "format": "text" },
+                    "difference": { "label": "Difference", "format": "text" },
+                    "explanation": { "label": "Explanation", "format": "text" },
+                    "error": { "label": "Error", "format": "text" }
+                }
+            }
+        }
+    }
+}

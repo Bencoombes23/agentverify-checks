@@ -85,6 +85,20 @@ class PackagingTests(unittest.TestCase):
         for key in ("input", "dockerfile", "readme"):
             self.assertTrue((self.root / ".actor" / actor[key]).is_file(), key)
         self.assertTrue((self.root / ".actor" / actor["dockerContextDir"] / "apify_actor").is_dir())
+        # Apify refuses to publish without output schemas.
+        self.assertTrue((self.root / ".actor" / actor["output"]).is_file())
+        self.assertTrue((self.root / ".actor" / actor["storages"]["dataset"]).is_file())
+
+    def test_dataset_schema_covers_every_output_field(self):
+        schema = json.loads((self.root / ".actor" / "dataset_schema.json").read_text())
+        props = schema["fields"]["properties"]
+        samples = [process_check(0, PASS_PCT, sign=True)[0], process_check(1, NUM_TEXT, sign=False)[0],
+                   process_check(2, {"calculation_type": "nonsense"}, sign=False)[0]]
+        for item in samples:
+            self.assertTrue(set(item) <= set(props), set(item) - set(props))
+        for field in props.values():
+            self.assertTrue(field["nullable"])
+        self.assertTrue(set(schema["views"]["overview"]["transformation"]["fields"]) <= set(props))
 
     def test_input_schema_is_sane(self):
         schema = json.loads((self.root / ".actor" / "input_schema.json").read_text())

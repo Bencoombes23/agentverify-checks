@@ -1,0 +1,13 @@
+{
+    "actorOutputSchemaVersion": 1,
+    "title": "AgentVerify check results",
+    "description": "One result row per check: passed, failed or error, with the evidence and an optional signed receipt.",
+    "properties": {
+        "results": {
+            "type": "string",
+            "title": "Results",
+            "description": "Dataset with one row per check, in input order.",
+            "template": "{{links.apiDefaultDatasetUrl}}/items"
+        }
+    }
+}
