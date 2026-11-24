@@ -1,0 +1,14 @@
+{
+    "actorSpecification": 1,
+    "name": "agentverify-checks",
+    "title": "AgentVerify: Deterministic Claim Checker with Signed Receipts",
+    "description": "Re-check an AI agent's arithmetic and verify that a quote, number or date appears in text you supply. Optional Ed25519-signed receipts.",
+    "version": "0.1",
+    "buildTag": "latest",
+    "input": "./input_schema.json",
+    "dockerfile": "./Dockerfile",
+    "dockerContextDir": "..",
+    "readme": "./README.md",
+    "minMemoryMbytes": 256,
+    "maxMemoryMbytes": 1024
+}

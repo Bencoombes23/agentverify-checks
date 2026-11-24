@@ -1,0 +1,40 @@
+{
+    "title": "AgentVerify input",
+    "type": "object",
+    "schemaVersion": 1,
+    "description": "A list of claims to check. Each one is checked independently and gives one result row.",
+    "properties": {
+        "checks": {
+            "title": "Checks",
+            "type": "array",
+            "description": "Up to 1000 checks. Arithmetic example: {\"calculation_type\":\"percentage\",\"claimed_result\":\"25\",\"inputs\":{\"part\":\"50\",\"whole\":\"200\"}}. Text example: {\"calculation_type\":\"number_in_text\",\"claimed_result\":\"3200000\",\"unit\":\"$\",\"allow_scaling\":true,\"source_text\":\"Seed funding was $3.2m in 2025.\"}. Types: arithmetic, subtract, multiply, divide, percentage, rental_yield, profit_margin, roi, compound_growth, loan_payment, quote_in_text, number_in_text, date_in_text.",
+            "editor": "json",
+            "prefill": [
+                {
+                    "calculation_type": "percentage",
+                    "claimed_result": "25",
+                    "inputs": {"part": "50", "whole": "200"}
+                },
+                {
+                    "calculation_type": "quote_in_text",
+                    "claim_text": "Seed funding was $3.2m",
+                    "source_text": "Seed funding was $3.2m in 2025."
+                }
+            ]
+        },
+        "signReceipts": {
+            "title": "Sign receipts",
+            "type": "boolean",
+            "description": "Attach an Ed25519-signed receipt to each result. Needs a signing key below. Billed as an extra event.",
+            "default": false
+        },
+        "signingKey": {
+            "title": "Signing key",
+            "type": "string",
+            "description": "Only for signed receipts: base64url of 32 random bytes that you generate and keep. Anyone holding it can issue receipts that verify as yours. Stored encrypted by Apify.",
+            "editor": "textfield",
+            "isSecret": true
+        }
+    },
+    "required": ["checks"]
+}
