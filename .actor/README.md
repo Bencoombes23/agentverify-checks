@@ -4,6 +4,16 @@ AgentVerify re-checks claims that an AI agent (or a person) makes, using fixed r
 
 It is built for agent pipelines that need a cheap, repeatable second check on numbers, quotes and dates before the result is used, reported or sent on.
 
+## Use cases
+
+- **Check LLM and AI agent output** before it is used: re-compute the sums, percentages and finance figures an agent states instead of trusting them.
+- **Verify quotes against a source text**: confirm a quoted sentence really appears in the article, filing or transcript you supply (exact match after simple normalisation).
+- **Spot-check numbers and dates in reports**: confirm a figure or date in a summary actually appears in the document it was drawn from.
+- **Keep an audit trail**: attach a signed receipt to each check so a later reader can confirm the result was not changed after the fact.
+- **Add a cheap guardrail to an automation**: call it from n8n, Make, Zapier, the Apify API or an MCP client as a repeatable step before something is sent or published.
+
+It is rule-based: no language model is called, so the same input always gives the same result. It checks arithmetic and whether text contains a claim. It does not judge whether a claim is true.
+
 ## What it checks
 
 | Check type | What it does | Example |
